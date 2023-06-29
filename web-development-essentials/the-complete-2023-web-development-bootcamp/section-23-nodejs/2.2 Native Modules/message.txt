@@ -1,0 +1,2 @@
+Hello, i am using fs.writeFile to save this string in message.txt
+message.txt was modified manually.

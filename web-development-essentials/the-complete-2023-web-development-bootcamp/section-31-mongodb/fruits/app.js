@@ -1,51 +1,52 @@
-const { MongoClient } = require("mongodb");
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/fruitsDB');
 
-// Replace the uri string with your connection string.
-const uri = "mongodb://localhost:27017";
+const fruitSchema = new mongoose.Schema({
+  name: String,
+  rating: Number,
+  review: String
+});
 
-const client = new MongoClient(uri);
+const Fruit = mongoose.model('Fruit', fruitSchema);
 
-async function run() {
-  try {
-    const database = client.db('fruitsDB');
-    // const movies = database.collection('movies');
+const fruit = new Fruit({
+  name: 'Apple',
+  rating: 7,
+  review: 'Tastes good.'
+});
 
-    // // Query for a movie that has the title 'Back to the Future'
-    // const query = { title: 'Back to the Future' };
-    // const movie = await movies.findOne(query);
+// fruit.save();
 
-    // console.log(movie);
+const personSchema = new mongoose.Schema({
+  name: String,
+  age: Number
+})
 
-    insertDocuments(database)
-  } finally {
-    // Ensures that the client will close when you finish/error
-    console.log('connected..............');
-    await client.close();
-  }
-}
+const Person = mongoose.model('Person', personSchema);
 
-const insertDocuments = (db, callback) => {
-  const collection = db.collection('fruits');
-  collection.insertMany([
-    {
-      name: "Apple",
-      score: 8,
-      review: "Good"
-    },
-    {
-      name: "Orange",
-      score: 5,
-      review: "Bad"
-    }
-  ],
-  (err, result) => {
-    assert.equal(err, null);
-    assert.equal(2, result.result.n);
-    assert.equal(2, result.ops.length);
-    console.log('inserted 2 documents into collection.');
-    callback(result);
-  } 
-  )
-}
+const person = new Person({
+  name: 'Jorgen',
+  age: 34
+});
 
-run().catch(console.dir);
+person.save();
+
+const kiwi = new Fruit({
+  name: 'kiwi',
+  rating: 9,
+  review: 'Fine.'
+});
+
+const banana = new Fruit({
+  name: 'banana',
+  rating: 5,
+  review: 'ok.'
+});
+
+const orange = new Fruit({
+  name: 'orange',
+  rating: 1,
+  review: 'bad.'
+})
+
+Fruit.insertMany([kiwi, banana, orange]);

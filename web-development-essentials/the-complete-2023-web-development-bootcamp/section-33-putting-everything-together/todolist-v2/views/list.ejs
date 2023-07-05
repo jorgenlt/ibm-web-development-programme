@@ -1,0 +1,37 @@
+<!-- Include the contents of the "header" file -->
+<%- include("header") -%>
+
+<!-- Box element with ID "heading" -->
+<div class="box" id="heading">
+  <!-- Heading displaying the value of the variable listTitle -->
+  <h1> <%= listTitle %> </h1>
+</div>
+
+<!-- Box element -->
+<div class="box">
+  <%  newListItems.forEach(item => { %>
+    <!-- Form for deleting an item -->
+    <form action="/delete" method="post">
+      <!-- Item container -->
+      <div class="item">
+        <!-- Checkbox input for selecting the item -->
+        <input type="checkbox" name="checkbox" value="<%=item._id%>" onChange="this.form.submit()">
+        <!-- Paragraph displaying the item's name -->
+        <p><%=item.name%></p>
+      </div>
+      <!-- Hidden input field to store the value of listTitle -->
+      <input type="hidden" name="listName" value="<%= listTitle %>"></input>
+    </form>
+  <%  }) %>
+
+  <!-- Form for adding a new item to the list -->
+  <form class="item" action="/" method="post">
+    <!-- Text input field for entering the new item -->
+    <input type="text" name="newItem" placeholder="New Item" autocomplete="off">
+    <!-- Submit button with a value equal to listTitle -->
+    <button type="submit" name="list" value="<%= listTitle %>">+</button>
+  </form>
+</div>
+
+<!-- Include the contents of the "footer" file -->
+<%- include("footer") -%>

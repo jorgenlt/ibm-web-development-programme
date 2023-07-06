@@ -62,21 +62,59 @@ app.route('/articles/:articleTitle')
     Article.findOne({ title: req.params.articleTitle })
       .then(foundArticle => {
         if (foundArticle) {
-          res.send(foundArticle)
+          res.send(foundArticle);
         } else {
-          res.send('Could not find article.')
+          res.status(404).send('Article not found.');
         }
+      })
+      .catch(error => {
+        res.status(500).send('Error occurred while finding article.');
       });
   })
   .put((req, res) => {
-    Article.replaceOne(
+    Article.updateOne(
       { title: req.params.articleTitle },
-      { title: req.body.title, content: req.body.content },
-      { overwrite: true }
+      { $set: req.body }
     )
-    .then(() => {
-      res.send('Successfully updated article.')
-    })
+      .then(result => {
+        if (result.nModified === 0) {
+          res.send('No changes made to the article.');
+        } else {
+          res.send('Successfully updated article.');
+        }
+      })
+      .catch(error => {
+        res.status(500).send('Error occurred while updating article.');
+      });
+  })
+  .patch((req, res) => {
+    Article.updateOne(
+      { title: req.params.articleTitle },
+      { $set: req.body }
+    )
+      .then(result => {
+        if (result.nModified === 0) {
+          res.send('No changes made to the article.');
+        } else {
+          res.send('Successfully updated article.');
+        }
+      })
+      .catch(error => {
+        res.status(500).send('Error occurred while updating article.');
+      });
+  })
+  .delete((req, res) => {
+    Article.deleteOne({ title: req.params.articleTitle })
+      .then(result => {
+        if (result.deletedCount === 0) {
+          res.send('Article not found.')
+        } else {
+          res.send('Successfully deleted article.')
+        }
+      })
+      .catch(error => {
+        res.status(500).send('An error occured while deleting article.')
+      })
   })
 
 app.listen(3000, () => {

@@ -22,39 +22,62 @@ const articleSchema = {
 
 const Article = mongoose.model('Article', articleSchema);
 
-app.get('/articles', (req, res) => {
-  Article.find()
-  .then(foundArticles => {
-    res.send(foundArticles);
-  })
-  .catch(error => {
-    console.log(error);
-  })
-});
-
-app.post('/articles', (req, res) => {
-  const newArticle = new Article({
-    title: req.body.title,
-    content: req.body.content
-  });
-  newArticle.save()
-    .then(() => {
-      res.send('New article created.')
+// Requests targeting all articles
+app.route('/articles')
+  .get((req, res) => {
+    Article.find()
+    .then(foundArticles => {
+      res.send(foundArticles);
     })
     .catch(error => {
-      res.send(error)
+      console.log(error);
     })
-});
+  })
+  .post((req, res) => {
+    const newArticle = new Article({
+      title: req.body.title,
+      content: req.body.content
+    });
+    newArticle.save()
+      .then(() => {
+        res.send('New article created.')
+      })
+      .catch(error => {
+        res.send(error)
+      })
+  })
+  .delete((req, res) => {
+    Article.deleteMany()
+      .then(() => {
+        res.send('All articles deleted.');
+      })
+      .catch(error => {
+        res.send(error);
+      })
+  })
 
-app.delete('/articles', (req, res) => {
-  Article.deleteMany()
+// Requests targeting a specific article
+app.route('/articles/:articleTitle')
+  .get((req, res) => {
+    Article.findOne({ title: req.params.articleTitle })
+      .then(foundArticle => {
+        if (foundArticle) {
+          res.send(foundArticle)
+        } else {
+          res.send('Could not find article.')
+        }
+      });
+  })
+  .put((req, res) => {
+    Article.replaceOne(
+      { title: req.params.articleTitle },
+      { title: req.body.title, content: req.body.content },
+      { overwrite: true }
+    )
     .then(() => {
-      res.send('All articles deleted.');
+      res.send('Successfully updated article.')
     })
-    .catch(error => {
-      res.send(error);
-    })
-});
+  })
 
 app.listen(3000, () => {
   console.log("Server started on port 3000");
